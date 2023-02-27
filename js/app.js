@@ -42,6 +42,9 @@ const displayPhones = (phones, dataLimit) => {
                   lead-in to additional content. This content is a little bit
                   longer.
                 </p>
+                <button onclick="loadPhoneDetails('${phone.slug}')" class="btn btn-primary" id="loadDEtails" data-bs-toggle="modal"
+                data-bs-target="#phoneDetailsModal">Show Details</button>
+                
               </div>
             </div>
     `;
@@ -66,8 +69,17 @@ const searchProcess = (dataLimit) => {
   loadPhones(searchText, dataLimit);
 };
 
+//handle search button click
 document.getElementById("search-btn").addEventListener("click", function () {
   searchProcess(10);
+});
+
+//search input field enter key handler
+document.getElementById("search-field").addEventListener("keyup", function (e) {
+  //keypress also allowed
+  if (e.key === "Enter") {
+    searchProcess(10);
+  }
 });
 
 //spinner function
@@ -80,7 +92,32 @@ const toggleSpinner = (isLoading) => {
   }
 };
 
+//show phone details
+const loadPhoneDetails = async (id) => {
+  url = `https://openapi.programming-hero.com/api/phone/${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  displayPhoneDetails(data.data);
+};
+const displayPhoneDetails = (phone) => {
+  console.log(phone);
+  document.getElementById("phoneDetailsModalLabel").innerText = phone.name;
+  document.getElementById("phone-details").innerHTML = `
+  <p>Released date : ${
+    phone.releaseDate ? phone.releaseDate : "no Release Date Found"
+  }</p>
+  <p>Storage : ${
+    phone.mainFeatures ? phone.mainFeatures.storage : "no storage information"
+  }</p>
+  <p>Bluetooth : ${
+    phone.others ? phone.others.Bluetooth : "no bluetooth information available"
+  }</p>
+  
+  `;
+};
+
 //show all function
 document.getElementById("show-all-btn").addEventListener("click", function () {
   searchProcess();
 });
+// loadPhones("iphone");
